@@ -60,14 +60,53 @@ static void MX_I2C1_Init(void);
 #define DISPLAY_ROWS 64
 #define DISPLAY_I2C_ADDR 0x3C
 
+#define PAGE_ROWS 8
+#define MAX_SIZE 5
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+int horizontal_offsets_by_page[DISPLAY_ROWS / PAGE_ROWS];
+
 char display_buffer[DISPLAY_COLS * DISPLAY_ROWS / 8];
 
-void draw_character(int row, int horizontal_offset, uint8_t* start_of_data) {
+// original data: 01010110
+// new data:	  000111000111000111111000
+
+void project_to_larger_num_size(uint8_t original_data, int multiplier, uint8_t* new_data_ptr) {
+//	uint8_t new_data[MAX_SIZE] = {};
+	int bit_shift_on_cur_idx = 0;
+	int cur_idx = 0;
+	for (int bit_to_project = 0; bit_to_project < 8; bit_to_project++) {
+		uint8_t bit = (original_data >> (7 - bit_to_project)) & 0x01;
+		for (int m = 0; m < multiplier; m++) {
+			uint8_t new_data_bit_selection_filter = 0x80 >> bit_shift_on_cur_idx;
+//			uint8_t bit_shifted = bit << (7 - bit_shift_on_cur_idx);
+			uint8_t bit_shifted = (bit == 1) ? new_data_bit_selection_filter : 0x00;
+			uint8_t prev_data = new_data_ptr[cur_idx];
+			new_data_ptr[cur_idx] = (prev_data & ~new_data_bit_selection_filter) | bit_shifted;
+			if (bit_shift_on_cur_idx >= 7) {
+				bit_shift_on_cur_idx = 0;
+				cur_idx += 1;
+			} else {
+				bit_shift_on_cur_idx += 1;
+			}
+		}
+	}
+
+}
+
+// TODO: add size capability
+void draw_character(const uint8_t* start_of_data, int row) {
+
+	if (horizontal_offsets_by_page[row] >= DISPLAY_COLS || row >= 8) {
+		return;
+	}
+	int size = 2;
+	int horizontal_offset = horizontal_offsets_by_page[row];
+
 	for (int col = 0; col < 8; col++) {
 		uint8_t data = 0x00;
 		for (int font_data_row = 0; font_data_row < 8; font_data_row++) {
@@ -75,41 +114,36 @@ void draw_character(int row, int horizontal_offset, uint8_t* start_of_data) {
 		}
 		display_buffer[(row * DISPLAY_COLS) + col + horizontal_offset] = data;
 	}
+	horizontal_offsets_by_page[row] += 8;
 }
 
-void draw_digit(int digit, int row, int horizontal_offset) {
+void draw_digit(int digit, int row) {
 	int font_number_data_idx = digit * 8;
-	for (int col = 0; col < 8; col++) {
-		draw_character(0, horizontal_offset, font_number_data + font_number_data_idx);
-//		uint8_t data = 0x00;
-//		for (int font_number_data_row = 0; font_number_data_row < 8; font_number_data_row++) {
-//			data |= ((font_number_data[font_number_data_row + font_number_data_idx] >> (7 - col)) & 0x01) << font_number_data_row;
-//		}
-//		display_buffer[(row * DISPLAY_COLS) + col + horizontal_offset] = data;
-	}
+	draw_character(font_number_data + font_number_data_idx, row);
 }
 
-// TODO: add size capability
-void draw_number(int row) {
+void draw_date() {
 
-	draw_digit(0, 0, 0);
-	draw_digit(3, 0, 8);
+	const int date_row = 0;
+	draw_digit(0, date_row);
+	draw_digit(3, date_row);
 
-	draw_digit(2, 0, 24);
-	draw_digit(6, 0, 32);
+	draw_character(font_char_data, date_row);
 
-//	for (int number = 0; number < 10; number++) {
-//		draw_digit(number, 0, 8 * number);
-//		int font_number_data_idx = number * 8;
-//		for (int col = 0; col < 8; col++) {
-//			uint8_t data = 0x00;
-//			for (int font_number_data_row = 0; font_number_data_row < 8; font_number_data_row++) {
-//				data |= ((font_number_data[font_number_data_row + font_number_data_idx] >> (7 - col)) & 0x01) << font_number_data_row;
-//			}
-//			display_buffer[(row * DISPLAY_COLS) + col + (8 * number)] = data;
-//		}
-//	}
+	draw_digit(2, date_row);
+	draw_digit(6, date_row);
 
+}
+
+void draw_time() {
+	const int date_row = 2;
+	draw_digit(1, date_row);
+	draw_digit(2, date_row);
+
+	draw_character(font_char_data + 8, date_row);
+
+	draw_digit(2, date_row);
+	draw_digit(4, date_row);
 }
 
 void print_to_screen(unsigned char* text) {
@@ -275,8 +309,15 @@ int main(void)
 
   init_display();
   clear_display();
-  draw_number(0);
+
+  draw_character(font_char_data, 0);
+
+//  draw_date();
+//  draw_time();
   render_display();
+
+//  uint8_t new_data[MAX_SIZE] = {};
+//  project_to_larger_num_size(0x4d, 4, new_data);
 
   /* USER CODE END 2 */
 
