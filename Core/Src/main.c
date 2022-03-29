@@ -77,9 +77,7 @@ char display_buffer[DISPLAY_COLS * DISPLAY_ROWS / 8];
 
 // original data: 01010110
 // new data:	  000111000111000111111000
-
 void project_to_larger_num_size(uint8_t original_data, int multiplier, uint8_t* new_data_ptr) {
-//	uint8_t new_data[MAX_SIZE] = {};
 	int bit_shift_on_cur_idx = 0;
 	int cur_idx = 0;
 	for (int bit_to_project = 0; bit_to_project < 8; bit_to_project++) {
@@ -340,95 +338,10 @@ int main(void)
   init_display();
   clear_display();
 
-//  draw_character(font_char_data, 0, 1);
-//  draw_character(font_char_data, 2, 2);
-
-//  display_buffer[(0 * DISPLAY_COLS) + 0] = 0b11111111;
-//  display_buffer[(0 * DISPLAY_COLS) + 1] = 0b11111111;
-//  display_buffer[(0 * DISPLAY_COLS) + 2] = 0b00000001;
-//  display_buffer[(0 * DISPLAY_COLS) + 3] = 0b00000001;
-//  display_buffer[(0 * DISPLAY_COLS) + 4] = 0b00000000;
-//  display_buffer[(0 * DISPLAY_COLS) + 5] = 0b00000000;
-//  display_buffer[(0 * DISPLAY_COLS) + 6] = 0b00000000;
-//  display_buffer[(0 * DISPLAY_COLS) + 7] = 0b00000000;
-//
-
-//  uint8_t data[] = {
-//	0b00000000, 0b00000000,
-//	0b00000000, 0b00000000,
-//	0b00000000, 0b11110000,
-//	0b00000000, 0b11110000,
-//	0b00000000, 0b00111111,
-//	0b00000000, 0b00111111,
-//	0b11000000, 0b00000011,
-//	0b11000000, 0b00000011,
-//	0b11110000, 0b00000000,
-//	0b11110000, 0b00000000,
-//	0b00111111, 0b00000000,
-//	0b00111111, 0b00000000,
-//	0b00001111, 0b00000000,
-//	0b00001111, 0b00000000,
-//	0b00000000, 0b00000000,
-//	0b00000000, 0b00000000
-//  };
-//
-//  int size = 2;
-//  int row = 2;
-//  int horizontal_offset = 0;
-//  int i = 0;
-//
-//  for (int col = 0; col < 8; col++) {
-//	  for (int col_offset = 0; col_offset < size; col_offset++) {
-//		  int cur_col = (col * size) + col_offset + horizontal_offset;
-//		  for (int row_offset = 0; row_offset < size; row_offset++) {
-//			  int cur_row = row + row_offset;
-//			  display_buffer[(cur_row * DISPLAY_COLS) + cur_col] = data[i];
-//			  i++;
-//		  }
-//	  }
-//  }
-
-//  display_buffer[(2 * DISPLAY_COLS) + 0] = 0b00000000;
-//  display_buffer[(3 * DISPLAY_COLS) + 0] = 0b00000000;
-//  display_buffer[(2 * DISPLAY_COLS) + 1] = 0b00000000;
-//  display_buffer[(3 * DISPLAY_COLS) + 1] = 0b00000000;
-//  display_buffer[(2 * DISPLAY_COLS) + 2] = 0b00000000;
-//  display_buffer[(3 * DISPLAY_COLS) + 2] = 0b11110000;
-//  display_buffer[(2 * DISPLAY_COLS) + 3] = 0b00000000;
-//  display_buffer[(3 * DISPLAY_COLS) + 3] = 0b11110000;
-//  display_buffer[(2 * DISPLAY_COLS) + 4] = 0b00000000;
-//  display_buffer[(3 * DISPLAY_COLS) + 4] = 0b00111111;
-//  display_buffer[(2 * DISPLAY_COLS) + 5] = 0b00000000;
-//  display_buffer[(3 * DISPLAY_COLS) + 5] = 0b00111111;
-//  display_buffer[(2 * DISPLAY_COLS) + 6] = 0b11000000;
-//  display_buffer[(3 * DISPLAY_COLS) + 6] = 0b00000011;
-//  display_buffer[(2 * DISPLAY_COLS) + 7] = 0b11000000;
-//  display_buffer[(3 * DISPLAY_COLS) + 7] = 0b00000011;
-//  display_buffer[(2 * DISPLAY_COLS) + 8] = 0b11110000;
-//  display_buffer[(3 * DISPLAY_COLS) + 8] = 0b00000000;
-//  display_buffer[(2 * DISPLAY_COLS) + 9] = 0b11110000;
-//  display_buffer[(3 * DISPLAY_COLS) + 9] = 0b00000000;
-//  display_buffer[(2 * DISPLAY_COLS) + 10] = 0b00111111;
-//  display_buffer[(3 * DISPLAY_COLS) + 10] = 0b00000000;
-//  display_buffer[(2 * DISPLAY_COLS) + 11] = 0b00111111;
-//  display_buffer[(3 * DISPLAY_COLS) + 11] = 0b00000000;
-//  display_buffer[(2 * DISPLAY_COLS) + 12] = 0b00001111;
-//  display_buffer[(3 * DISPLAY_COLS) + 12] = 0b00000000;
-//  display_buffer[(2 * DISPLAY_COLS) + 13] = 0b00001111;
-//  display_buffer[(3 * DISPLAY_COLS) + 13] = 0b00000000;
-//  display_buffer[(2 * DISPLAY_COLS) + 14] = 0b00000000;
-//  display_buffer[(3 * DISPLAY_COLS) + 14] = 0b00000000;
-//  display_buffer[(2 * DISPLAY_COLS) + 15] = 0b00000000;
-//  display_buffer[(3 * DISPLAY_COLS) + 15] = 0b00000000;
-
-
-
   draw_date();
   draw_time();
-  render_display();
 
-//  uint8_t new_data[MAX_SIZE] = {};
-//  project_to_larger_num_size(0x4d, 2, new_data);
+  render_display();
 
   /* USER CODE END 2 */
 
