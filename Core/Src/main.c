@@ -43,6 +43,8 @@
 /* Private variables ---------------------------------------------------------*/
  I2C_HandleTypeDef hi2c1;
 
+TIM_HandleTypeDef htim7;
+
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
@@ -54,6 +56,7 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_I2C1_Init(void);
+static void MX_TIM7_Init(void);
 /* USER CODE BEGIN PFP */
 
 #define DISPLAY_COLS 128
@@ -65,6 +68,8 @@ static void MX_I2C1_Init(void);
 
 #define FONT_WIDTH 8
 #define FONT_HEIGHT 8
+
+float centi_seconds_elapsed;
 
 /* USER CODE END PFP */
 
@@ -84,7 +89,6 @@ void project_to_larger_num_size(uint8_t original_data, int multiplier, uint8_t* 
 		uint8_t bit = (original_data >> (7 - bit_to_project)) & 0x01;
 		for (int m = 0; m < multiplier; m++) {
 			uint8_t new_data_bit_selection_filter = 0x80 >> bit_shift_on_cur_idx;
-//			uint8_t bit_shifted = bit << (7 - bit_shift_on_cur_idx);
 			uint8_t bit_shifted = (bit == 1) ? new_data_bit_selection_filter : 0x00;
 			uint8_t prev_data = new_data_ptr[cur_idx];
 			new_data_ptr[cur_idx] = (prev_data & ~new_data_bit_selection_filter) | bit_shifted;
@@ -103,7 +107,7 @@ int min(int a, int b) {
 	return (a < b) ? a : b;
 }
 
-// TODO: add size capability
+// TODO: center text
 void draw_character(const uint8_t* start_of_data, int row, int size) {
 
 	if (horizontal_offsets_by_page[row] >= DISPLAY_COLS || row >= PAGE_ROWS) {
@@ -148,8 +152,14 @@ void draw_digit(int digit, int row, int size) {
 void draw_date() {
 
 	int date_text_size = 2;
+	const int num_date_characters = 5;
 
+	const int date_text_width = FONT_WIDTH * date_text_size * num_date_characters;
 	const int date_row = 0;
+
+	horizontal_offsets_by_page[date_row] = (DISPLAY_COLS - date_text_width) / 2;
+	horizontal_offsets_by_page[date_row + 1] = (DISPLAY_COLS - date_text_width) / 2;
+
 	draw_digit(0, date_row, date_text_size);
 	draw_digit(3, date_row, date_text_size);
 
@@ -162,16 +172,45 @@ void draw_date() {
 
 void draw_time() {
 
-	int time_text_size = 3;
+	int time_text_size = 2;
 
 	const int time_row = 4;
-	draw_digit(1, time_row, time_text_size);
-	draw_digit(2, time_row, time_text_size);
+	const int num_time_characters = 8;
+	const int time_text_width = FONT_WIDTH * time_text_size * num_time_characters;
+
+	horizontal_offsets_by_page[time_row] = (DISPLAY_COLS - time_text_width) / 2;
+	horizontal_offsets_by_page[time_row + 1] = (DISPLAY_COLS - time_text_width) / 2;
+
+	int centi_tens = 0, centi_ones = 0, sec_tens = 0, sec_ones = 0, min_tens = 0, min_ones = 0;
+
+	int centi_seconds_elapsed_int = (int)centi_seconds_elapsed;
+
+	int centis = centi_seconds_elapsed_int % 100;
+	centi_ones = centis % 10;
+	centi_tens = centis / 10;
+	centi_seconds_elapsed_int /= 100;
+
+	int secs = centi_seconds_elapsed_int % 60;
+	sec_ones = secs % 10;
+	sec_tens = secs / 10;
+
+	int mins = centi_seconds_elapsed_int / 60;
+	min_ones = mins % 10;
+	mins /= 10;
+	min_tens = mins % 10;
+
+	draw_digit(min_tens, time_row, time_text_size);
+	draw_digit(min_ones, time_row, time_text_size);
 
 	draw_character(font_char_data + 8, time_row, time_text_size);
 
-	draw_digit(2, time_row, time_text_size);
-	draw_digit(4, time_row, time_text_size);
+	draw_digit(sec_tens, time_row, time_text_size);
+	draw_digit(sec_ones, time_row, time_text_size);
+
+	draw_character(font_char_data + 8, time_row, time_text_size);
+
+	draw_digit(centi_tens, time_row, time_text_size);
+	draw_digit(centi_ones, time_row, time_text_size);
 }
 
 void print_to_screen(unsigned char* text) {
@@ -282,6 +321,7 @@ void clear_display() {
 }
 
 uint8_t buffer[1];
+extern uint8_t timing;
 
 /* USER CODE END 0 */
 
@@ -315,15 +355,16 @@ int main(void)
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   MX_I2C1_Init();
+  MX_TIM7_Init();
   /* USER CODE BEGIN 2 */
-
+  timing = 1;
+  HAL_TIM_Base_Start_IT(&htim7);
   HAL_UART_Receive_IT(&huart2, buffer, sizeof(buffer));
-
   char buffer[20];
   sprintf(buffer, "test print\r\n");
   print_to_screen((unsigned char*)buffer);
 
-
+  // figure out what is to do what returns HAL_BUSY
   HAL_StatusTypeDef ret = HAL_I2C_IsDeviceReady(&hi2c1, DISPLAY_I2C_ADDR << 1, 5, HAL_MAX_DELAY);
   if (ret != HAL_OK) {
 	  unsigned char buffer[20];
@@ -336,12 +377,6 @@ int main(void)
   }
 
   init_display();
-  clear_display();
-
-  draw_date();
-  draw_time();
-
-  render_display();
 
   /* USER CODE END 2 */
 
@@ -352,6 +387,10 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	  clear_display();
+	  draw_date();
+	  draw_time();
+	  render_display();
   }
   /* USER CODE END 3 */
 }
@@ -394,7 +433,7 @@ void SystemClock_Config(void)
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV16;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
@@ -434,6 +473,44 @@ static void MX_I2C1_Init(void)
   /* USER CODE BEGIN I2C1_Init 2 */
 
   /* USER CODE END I2C1_Init 2 */
+
+}
+
+/**
+  * @brief TIM7 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM7_Init(void)
+{
+
+  /* USER CODE BEGIN TIM7_Init 0 */
+
+  /* USER CODE END TIM7_Init 0 */
+
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM7_Init 1 */
+
+  /* USER CODE END TIM7_Init 1 */
+  htim7.Instance = TIM7;
+  htim7.Init.Prescaler = 10000 - 1;
+  htim7.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim7.Init.Period = 11 - 1;
+  htim7.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim7) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim7, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM7_Init 2 */
+
+  /* USER CODE END TIM7_Init 2 */
 
 }
 
@@ -494,12 +571,25 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
 
+  /*Configure GPIO pin : PC1 */
+  GPIO_InitStruct.Pin = GPIO_PIN_1;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
   /*Configure GPIO pin : LD2_Pin */
   GPIO_InitStruct.Pin = LD2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI1_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
 }
 
