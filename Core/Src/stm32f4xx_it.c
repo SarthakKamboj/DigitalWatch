@@ -22,6 +22,7 @@
 #include "stm32f4xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "time.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -29,6 +30,13 @@
 extern float centi_seconds_elapsed;
 #define TIM7_INT_CENTI_SEC_ELAPSED 1.047619047619047619047619047619
 uint8_t timing, paused, reset;
+
+extern display_time_t start_time;
+
+set_option cur_option_to_change = set_none;
+extern int days[];
+extern int cumul_days[12];
+
 /* USER CODE END TD */
 
 /* Private define ------------------------------------------------------------*/
@@ -202,6 +210,53 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /**
+  * @brief This function handles EXTI line 0 interrupt.
+  */
+void EXTI0_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI0_IRQn 0 */
+
+  /* USER CODE END EXTI0_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
+  /* USER CODE BEGIN EXTI0_IRQn 1 */
+  switch (cur_option_to_change) {
+    case set_none:
+  	  break;
+    case set_month:
+      start_time.month += 1;
+  	  if (start_time.month > 11) {
+  		  start_time.month = 0;
+  	  }
+  	  break;
+    case set_day:
+    	start_time.day += 1;
+		if (start_time.day >= days[start_time.month]) {
+			start_time.day = 0;
+		}
+		break;
+    case set_hour:
+    	start_time.hour += 1;
+		if (start_time.hour > 23) {
+			start_time.hour = 0;
+		}
+		break;
+    case set_minute:
+    	start_time.minute += 1;
+		if (start_time.minute > 59) {
+			start_time.minute = 0;
+		}
+  	break;
+    case set_sec:
+	  start_time.second += 1;
+	  if (start_time.second > 59) {
+		  start_time.second = 0;
+	  }
+	  break;
+    }
+  /* USER CODE END EXTI0_IRQn 1 */
+}
+
+/**
   * @brief This function handles EXTI line 1 interrupt.
   */
 void EXTI1_IRQHandler(void)
@@ -211,17 +266,12 @@ void EXTI1_IRQHandler(void)
   /* USER CODE END EXTI1_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_1);
   /* USER CODE BEGIN EXTI1_IRQn 1 */
-  if (timing) {
-	  timing = 0;
-	  paused = 1;
-  } else if (paused) {
-	  paused = 0;
-	  reset = 1;
-	  centi_seconds_elapsed = 0;
-  } else if (reset) {
-	  reset = 0;
-	  timing = 1;
+
+  cur_option_to_change += 1;
+  if (cur_option_to_change == set_sec) {
+	  cur_option_to_change = set_none;
   }
+
   /* USER CODE END EXTI1_IRQn 1 */
 }
 
