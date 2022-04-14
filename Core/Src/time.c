@@ -67,9 +67,6 @@ void draw_date() {
 
 	int padding_left = (DISPLAY_COLS - date_text_width) / 2;
 
-//	horizontal_offsets_by_page[date_row] = (DISPLAY_COLS - date_text_width) / 2;
-//	horizontal_offsets_by_page[date_row + 1] = (DISPLAY_COLS - date_text_width) / 2;
-
 	set_padding(date_row, padding_left);
 	set_padding(date_row + 1, padding_left);
 
