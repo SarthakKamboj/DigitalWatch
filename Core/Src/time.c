@@ -90,9 +90,6 @@ void draw_time() {
 	const int num_time_characters = 8;
 	const int time_text_width = FONT_WIDTH * time_text_size * num_time_characters;
 
-//	horizontal_offsets_by_page[time_row] = (DISPLAY_COLS - time_text_width) / 2;
-//	horizontal_offsets_by_page[time_row + 1] = (DISPLAY_COLS - time_text_width) / 2;
-
 	int padding_left = (DISPLAY_COLS - time_text_width) / 2;
 	set_padding(time_row, padding_left);
 	set_padding(time_row + 1, padding_left);
