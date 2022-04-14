@@ -29,9 +29,9 @@
 /* USER CODE BEGIN TD */
 extern float centi_seconds_elapsed;
 #define TIM7_INT_CENTI_SEC_ELAPSED 1.047619047619047619047619047619
-uint8_t timing, paused, reset;
 
 extern display_time_t start_time;
+extern display_time_t display_time;
 
 set_option cur_option_to_change = set_none;
 extern int days[];
@@ -212,6 +212,8 @@ void SysTick_Handler(void)
 /**
   * @brief This function handles EXTI line 0 interrupt.
   */
+// sometimes this interrupt is being called multiple times, making
+// it increment too frequently
 void EXTI0_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI0_IRQn 0 */
@@ -267,10 +269,10 @@ void EXTI1_IRQHandler(void)
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_1);
   /* USER CODE BEGIN EXTI1_IRQn 1 */
 
-  cur_option_to_change += 1;
-  if (cur_option_to_change == set_sec) {
-	  cur_option_to_change = set_none;
-  }
+//  cur_option_to_change += 1;
+//  if (cur_option_to_change == set_sec) {
+//	  cur_option_to_change = set_none;
+//  }
 
   /* USER CODE END EXTI1_IRQn 1 */
 }
@@ -289,6 +291,7 @@ void USART2_IRQHandler(void)
   /* USER CODE END USART2_IRQn 1 */
 }
 
+extern int last_hide_toggle_time;
 /**
   * @brief This function handles EXTI line[15:10] interrupts.
   */
@@ -299,6 +302,21 @@ void EXTI15_10_IRQHandler(void)
   /* USER CODE END EXTI15_10_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(B1_Pin);
   /* USER CODE BEGIN EXTI15_10_IRQn 1 */
+	if (cur_option_to_change == set_sec) {
+	  cur_option_to_change = set_none;
+	  centi_seconds_elapsed = 0;
+	} else {
+		cur_option_to_change += 1;
+		last_hide_toggle_time = centi_seconds_elapsed;
+
+		if (cur_option_to_change == set_month) {
+			start_time.month = display_time.month;
+			start_time.day = display_time.day;
+			start_time.hour = display_time.hour;
+			start_time.minute = display_time.minute;
+			start_time.second = display_time.second;
+		}
+	}
   /* USER CODE END EXTI15_10_IRQn 1 */
 }
 
@@ -312,9 +330,9 @@ void TIM7_IRQHandler(void)
   /* USER CODE END TIM7_IRQn 0 */
   HAL_TIM_IRQHandler(&htim7);
   /* USER CODE BEGIN TIM7_IRQn 1 */
-  if (timing) {
-	  centi_seconds_elapsed += TIM7_INT_CENTI_SEC_ELAPSED;
-  }
+
+  centi_seconds_elapsed += TIM7_INT_CENTI_SEC_ELAPSED;
+
   /* USER CODE END TIM7_IRQn 1 */
 }
 

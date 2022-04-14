@@ -20,8 +20,6 @@ typedef enum set_option {
 	set_none, set_month, set_day, set_hour, set_minute, set_sec
 } set_option;
 
-extern float centi_seconds_elapsed;
-
 void init_time();
 void update_time();
 void draw_date();
@@ -29,6 +27,7 @@ void draw_time();
 void display_in_change_mode();
 int get_start_centis();
 void draw_digit(int digit, int row, int size);
+void place_but_dont_draw_digit(int digit, int row, int size);
 void draw_character(const uint8_t* start_of_data, int row, int size);
 
 

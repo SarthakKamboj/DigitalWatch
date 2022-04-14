@@ -70,6 +70,8 @@ extern set_option cur_option_to_change;
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+uint8_t buffer[1];
+
 /* USER CODE END 0 */
 
 /**
@@ -104,7 +106,7 @@ int main(void)
   MX_I2C1_Init();
   MX_TIM7_Init();
   /* USER CODE BEGIN 2 */
-  timing = 1;
+
   HAL_TIM_Base_Start_IT(&htim7);
   HAL_UART_Receive_IT(&huart2, buffer, sizeof(buffer));
   char buffer[20];
