@@ -124,7 +124,7 @@ void draw_time() {
 int last_hide_toggle_time;
 void display_in_change_mode() {
 
-	static int hide = 0;
+	static int hide = 1;
 
 	if (centi_seconds_elapsed - last_hide_toggle_time > 50) {
 		last_hide_toggle_time = centi_seconds_elapsed;

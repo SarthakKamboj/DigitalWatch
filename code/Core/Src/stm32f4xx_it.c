@@ -37,6 +37,8 @@ set_option cur_option_to_change = set_none;
 extern int days[];
 extern int cumul_days[12];
 
+extern int last_hide_toggle_time;
+
 /* USER CODE END TD */
 
 /* Private define ------------------------------------------------------------*/
@@ -212,8 +214,6 @@ void SysTick_Handler(void)
 /**
   * @brief This function handles EXTI line 0 interrupt.
   */
-// sometimes this interrupt is being called multiple times, making
-// it increment too frequently
 void EXTI0_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI0_IRQn 0 */
@@ -291,7 +291,6 @@ void USART2_IRQHandler(void)
   /* USER CODE END USART2_IRQn 1 */
 }
 
-extern int last_hide_toggle_time;
 /**
   * @brief This function handles EXTI line[15:10] interrupts.
   */
@@ -302,6 +301,7 @@ void EXTI15_10_IRQHandler(void)
   /* USER CODE END EXTI15_10_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(B1_Pin);
   /* USER CODE BEGIN EXTI15_10_IRQn 1 */
+
 	if (cur_option_to_change == set_sec) {
 	  cur_option_to_change = set_none;
 	  centi_seconds_elapsed = 0;
