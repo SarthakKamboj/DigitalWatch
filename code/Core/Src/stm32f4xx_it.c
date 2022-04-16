@@ -33,11 +33,15 @@ extern float centi_seconds_elapsed;
 extern display_time_t start_time;
 extern display_time_t display_time;
 
-set_option cur_option_to_change = set_none;
+//set_option cur_option_to_change = set_none;
 extern int days[];
 extern int cumul_days[12];
 
-extern int last_hide_toggle_time;
+extern int last_hide;
+extern int hide;
+
+int time_option_change_last = 0;
+int time_option_value_change_last = 0;
 
 /* USER CODE END TD */
 
@@ -221,40 +225,47 @@ void EXTI0_IRQHandler(void)
   /* USER CODE END EXTI0_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
   /* USER CODE BEGIN EXTI0_IRQn 1 */
-  switch (cur_option_to_change) {
-    case set_none:
-  	  break;
-    case set_month:
-      start_time.month += 1;
-  	  if (start_time.month > 11) {
-  		  start_time.month = 0;
-  	  }
-  	  break;
-    case set_day:
-    	start_time.day += 1;
-		if (start_time.day >= days[start_time.month]) {
-			start_time.day = 0;
-		}
-		break;
-    case set_hour:
-    	start_time.hour += 1;
-		if (start_time.hour > 23) {
-			start_time.hour = 0;
-		}
-		break;
-    case set_minute:
-    	start_time.minute += 1;
-		if (start_time.minute > 59) {
-			start_time.minute = 0;
-		}
-  	break;
-    case set_sec:
-	  start_time.second += 1;
-	  if (start_time.second > 59) {
-		  start_time.second = 0;
-	  }
-	  break;
-    }
+  if (centi_seconds_elapsed - time_option_value_change_last  < 25) {
+	  return;
+	}
+
+  time_option_value_change_last = centi_seconds_elapsed;
+  inc_val_of_cur_set_option();
+
+//  switch (cur_option_to_change) {
+//    case set_none:
+//  	  break;
+//    case set_month:
+//      start_time.month += 1;
+//  	  if (start_time.month > 11) {
+//  		  start_time.month = 0;
+//  	  }
+//  	  break;
+//    case set_day:
+//    	start_time.day += 1;
+//		if (start_time.day >= days[start_time.month]) {
+//			start_time.day = 0;
+//		}
+//		break;
+//    case set_hour:
+//    	start_time.hour += 1;
+//		if (start_time.hour > 23) {
+//			start_time.hour = 0;
+//		}
+//		break;
+//    case set_minute:
+//    	start_time.minute += 1;
+//		if (start_time.minute > 59) {
+//			start_time.minute = 0;
+//		}
+//  	break;
+//    case set_sec:
+//	  start_time.second += 1;
+//	  if (start_time.second > 59) {
+//		  start_time.second = 0;
+//	  }
+//	  break;
+//    }
   /* USER CODE END EXTI0_IRQn 1 */
 }
 
@@ -302,21 +313,32 @@ void EXTI15_10_IRQHandler(void)
   HAL_GPIO_EXTI_IRQHandler(B1_Pin);
   /* USER CODE BEGIN EXTI15_10_IRQn 1 */
 
-	if (cur_option_to_change == set_sec) {
-	  cur_option_to_change = set_none;
-	  centi_seconds_elapsed = 0;
-	} else {
-		cur_option_to_change += 1;
-		last_hide_toggle_time = centi_seconds_elapsed;
+  if (centi_seconds_elapsed - time_option_change_last  < 10) {
+	  return;
+  }
 
-		if (cur_option_to_change == set_month) {
-			start_time.month = display_time.month;
-			start_time.day = display_time.day;
-			start_time.hour = display_time.hour;
-			start_time.minute = display_time.minute;
-			start_time.second = display_time.second;
-		}
-	}
+  time_option_change_last = centi_seconds_elapsed;
+  last_hide = centi_seconds_elapsed;
+	hide = 1;
+
+	move_to_next_set_option();
+
+//	if (cur_option_to_change == set_sec) {
+//	  cur_option_to_change = set_none;
+//	  centi_seconds_elapsed = 0;
+//	  last_time_toggle_pressed = 0;
+//	  last_hide_toggle_time = 0;
+//	} else {
+//		cur_option_to_change += 1;
+//
+//		if (cur_option_to_change == set_month) {
+//			start_time.month = display_time.month;
+//			start_time.day = display_time.day;
+//			start_time.hour = display_time.hour;
+//			start_time.minute = display_time.minute;
+//			start_time.second = display_time.second;
+//		}
+//	}
   /* USER CODE END EXTI15_10_IRQn 1 */
 }
 

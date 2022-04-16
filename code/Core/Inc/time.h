@@ -21,7 +21,7 @@ typedef enum set_option {
 } set_option;
 
 void init_time();
-void update_time();
+void update_display_time();
 void draw_date();
 void draw_time();
 void display_in_change_mode();
@@ -29,6 +29,8 @@ int get_start_centis();
 void draw_digit(int digit, int row, int size);
 void place_but_dont_draw_digit(int digit, int row, int size);
 void draw_character(const uint8_t* start_of_data, int row, int size);
+void move_to_next_set_option();
+void inc_val_of_cur_set_option();
 
 
 #endif /* INC_TIME_H_ */

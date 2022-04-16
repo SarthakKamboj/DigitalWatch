@@ -12,7 +12,11 @@ int days[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 int cumul_days[12] = {};
 
 extern float centi_seconds_elapsed;
-extern set_option cur_option_to_change;
+//extern set_option cur_option_to_change;
+
+extern int last_hide;
+extern int time_option_change_last;
+set_option cur_option_to_change = set_none;
 
 display_time_t display_time;
 display_time_t start_time;
@@ -29,9 +33,11 @@ void init_time() {
 	start_time.hour = 23;
 	start_time.minute = 59;
 	start_time.second = 50;
+
+	cur_option_to_change = set_none;
 }
 
-void update_time() {
+void update_display_time() {
 	int centi_seconds_elapsed_int = (int)centi_seconds_elapsed + get_start_centis();
 
 	centi_seconds_elapsed_int /= 100;
@@ -121,13 +127,12 @@ void draw_time() {
 
 }
 
-int last_hide_toggle_time;
+int last_hide;
+int hide = 1;
 void display_in_change_mode() {
 
-	static int hide = 1;
-
-	if (centi_seconds_elapsed - last_hide_toggle_time > 50) {
-		last_hide_toggle_time = centi_seconds_elapsed;
+	if (centi_seconds_elapsed - last_hide > 50) {
+		last_hide = centi_seconds_elapsed;
 		hide = !hide;
 	}
 
@@ -299,4 +304,61 @@ void draw_character(const uint8_t* start_of_data, int row, int size) {
 		int new_padding = min(cur_row_padding + (size * FONT_WIDTH), DISPLAY_COLS);
 		set_padding(row + row_offset, new_padding);
 	}
+}
+
+void move_to_next_set_option() {
+	if (cur_option_to_change == set_sec) {
+		cur_option_to_change = set_none;
+		centi_seconds_elapsed = 0;
+		time_option_change_last = 0;
+		last_hide = 0;
+	} else {
+		cur_option_to_change += 1;
+
+		if (cur_option_to_change == set_month) {
+			start_time.month = display_time.month;
+			start_time.day = display_time.day;
+			start_time.hour = display_time.hour;
+			start_time.minute = display_time.minute;
+			start_time.second = display_time.second;
+		}
+	}
+}
+
+
+void inc_val_of_cur_set_option() {
+	switch (cur_option_to_change) {
+	    case set_none:
+	  	  break;
+	    case set_month:
+	      start_time.month += 1;
+	  	  if (start_time.month > 11) {
+	  		  start_time.month = 0;
+	  	  }
+	  	  break;
+	    case set_day:
+	    	start_time.day += 1;
+			if (start_time.day >= days[start_time.month]) {
+				start_time.day = 0;
+			}
+			break;
+	    case set_hour:
+	    	start_time.hour += 1;
+			if (start_time.hour > 23) {
+				start_time.hour = 0;
+			}
+			break;
+	    case set_minute:
+	    	start_time.minute += 1;
+			if (start_time.minute > 59) {
+				start_time.minute = 0;
+			}
+	  	break;
+	    case set_sec:
+		  start_time.second += 1;
+		  if (start_time.second > 59) {
+			  start_time.second = 0;
+		  }
+		  break;
+	    }
 }

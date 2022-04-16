@@ -139,7 +139,7 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 
-	  update_time();
+	  update_display_time();
 
 	  clear_display();
 	  if (cur_option_to_change != set_none) {
