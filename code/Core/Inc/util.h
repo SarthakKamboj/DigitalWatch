@@ -12,5 +12,6 @@
 
 void print_to_screen(unsigned char* text);
 int min(int a, int b);
+int max(int a, int b);
 
 #endif /* INC_UTIL_H_ */

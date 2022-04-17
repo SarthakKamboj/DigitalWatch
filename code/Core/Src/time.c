@@ -16,6 +16,7 @@ extern float centi_seconds_elapsed;
 
 extern int last_hide;
 extern int time_option_change_last;
+extern int time_option_value_change_last;
 set_option cur_option_to_change = set_none;
 
 display_time_t display_time;
@@ -28,11 +29,11 @@ void init_time() {
 	  cumul_days[month] = cum_day;
 	}
 
-	start_time.month = 5;
-	start_time.day = 29;
-	start_time.hour = 23;
-	start_time.minute = 59;
-	start_time.second = 50;
+	start_time.month = 6;
+	start_time.day = 30;
+	start_time.hour = 1;
+	start_time.minute = 1;
+	start_time.second = 1;
 
 	cur_option_to_change = set_none;
 }
@@ -51,11 +52,11 @@ void update_display_time() {
 	int total_days = (centi_seconds_elapsed_int) % 365;
 	int cur_month;
 
-	if (total_days < days[0]) {
+	if (total_days <= days[0]) {
 		cur_month = 0;
 	} else {
 		for (int month = 1; month < 12; month++) {
-			if (total_days < cumul_days[month]) {
+			if (total_days <= cumul_days[month]) {
 				cur_month = month;
 				break;
 			}
@@ -232,8 +233,6 @@ void display_in_change_mode() {
 		draw_digit(start_time.second % 10, time_row, time_text_size);
 	}
 
-//	HAL_Delay(500);
-//	hide = !hide;
 
 }
 
@@ -311,6 +310,7 @@ void move_to_next_set_option() {
 		cur_option_to_change = set_none;
 		centi_seconds_elapsed = 0;
 		time_option_change_last = 0;
+		time_option_value_change_last = 0;
 		last_hide = 0;
 	} else {
 		cur_option_to_change += 1;
@@ -321,43 +321,55 @@ void move_to_next_set_option() {
 			start_time.hour = display_time.hour;
 			start_time.minute = display_time.minute;
 			start_time.second = display_time.second;
+
 		}
 	}
 }
 
 
-void inc_val_of_cur_set_option() {
+void change_val_of_cur_set_option(int delta) {
 	switch (cur_option_to_change) {
 	    case set_none:
 	  	  break;
 	    case set_month:
-	      start_time.month += 1;
+	      start_time.month += delta;
 	  	  if (start_time.month > 11) {
 	  		  start_time.month = 0;
+	  	  } else if (start_time.month < 0) {
+	  		start_time.month = 11;
 	  	  }
+		  start_time.day = max(min(days[start_time.month], start_time.day + 1), 1) - 1;
 	  	  break;
 	    case set_day:
-	    	start_time.day += 1;
+	    	start_time.day += delta;
 			if (start_time.day >= days[start_time.month]) {
 				start_time.day = 0;
-			}
+			} else if (start_time.month < 0) {
+				start_time.day = days[start_time.month];
+		  	}
 			break;
 	    case set_hour:
-	    	start_time.hour += 1;
+	    	start_time.hour += delta;
 			if (start_time.hour > 23) {
 				start_time.hour = 0;
-			}
+			} else if (start_time.hour < 0) {
+				start_time.hour = 23;
+		  	}
 			break;
 	    case set_minute:
-	    	start_time.minute += 1;
+	    	start_time.minute += delta;
 			if (start_time.minute > 59) {
 				start_time.minute = 0;
-			}
+			} else if (start_time.minute < 0) {
+				start_time.minute = 59;
+		  	}
 	  	break;
 	    case set_sec:
-		  start_time.second += 1;
+		  start_time.second += delta;
 		  if (start_time.second > 59) {
 			  start_time.second = 0;
+		  } else if (start_time.second < 0) {
+			  start_time.second = 59;
 		  }
 		  break;
 	    }

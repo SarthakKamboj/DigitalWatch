@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include "font_data.h"
 #include "stm32f4xx_hal.h"
+#include <unistd.h>
 
 #define DISPLAY_COLS 128
 #define DISPLAY_ROWS 64
