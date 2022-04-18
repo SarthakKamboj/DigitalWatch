@@ -1883,7 +1883,7 @@
     (property "Value" "0u1" (id 1) (at 54.61 93.9862 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Footprint" "Capacitor_SMD:C_01005_0402Metric" (id 2) (at 52.07 92.71 0)
+    (property "Footprint" "Capacitor_SMD:C_0805_2012Metric" (id 2) (at 52.07 92.71 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 52.07 92.71 0)
@@ -1892,7 +1892,7 @@
     (property "JLCPCB Part #" "" (id 4) (at 52.07 92.71 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "DigiKey Part #" "GRM02YR60J104ME01L" (id 5) (at 52.07 92.71 0)
+    (property "DigiKey Part #" "0805ZC104KAT2A" (id 5) (at 52.07 92.71 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid f4a17420-d9df-47b6-8d6b-d28ea874619f))
@@ -2406,7 +2406,7 @@
   (symbol (lib_id "power:GND") (at 236.22 73.66 0) (unit 1)
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid 8b6e897a-69ad-468a-b1a1-f26ad2399337)
-    (property "Reference" "#PWR?" (id 0) (at 236.22 80.01 0)
+    (property "Reference" "#PWR0129" (id 0) (at 236.22 80.01 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (id 1) (at 236.22 78.74 0))
@@ -2490,7 +2490,7 @@
   (symbol (lib_id "Device:C_Small") (at 257.81 67.31 0) (unit 1)
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid ad4fe0cb-eb55-43e0-b2d0-b7c510f1f6d7)
-    (property "Reference" "C?" (id 0) (at 260.35 66.0462 0)
+    (property "Reference" "C9" (id 0) (at 260.35 66.0462 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "1u0" (id 1) (at 260.35 68.5862 0)
@@ -2805,7 +2805,7 @@
   (symbol (lib_id "Device:C_Small") (at 236.22 67.31 0) (unit 1)
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid eadfda04-f56f-475e-9b77-9925c6870fda)
-    (property "Reference" "C?" (id 0) (at 238.76 66.0462 0)
+    (property "Reference" "C8" (id 0) (at 238.76 66.0462 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "1u0" (id 1) (at 238.76 68.5862 0)
@@ -3054,10 +3054,10 @@
       (reference "#PWR0128") (unit 1) (value "GND") (footprint "")
     )
     (path "/8b6e897a-69ad-468a-b1a1-f26ad2399337"
-      (reference "#PWR?") (unit 1) (value "GND") (footprint "")
+      (reference "#PWR0129") (unit 1) (value "GND") (footprint "")
     )
     (path "/17f827b9-73cd-4aa3-8d36-45597ec3ede1"
-      (reference "C1") (unit 1) (value "0u1") (footprint "Capacitor_SMD:C_01005_0402Metric")
+      (reference "C1") (unit 1) (value "0u1") (footprint "Capacitor_SMD:C_0805_2012Metric")
     )
     (path "/ed9c3204-f848-4eeb-98bb-4c2a58dc4d9a"
       (reference "C2") (unit 1) (value "4u7") (footprint "Capacitor_SMD:C_0805_2012Metric")
@@ -3077,11 +3077,11 @@
     (path "/f9aefa77-a7f4-4a48-8606-c1a08e82b08a"
       (reference "C7") (unit 1) (value "1u") (footprint "Capacitor_SMD:C_0805_2012Metric")
     )
-    (path "/ad4fe0cb-eb55-43e0-b2d0-b7c510f1f6d7"
-      (reference "C?") (unit 1) (value "1u0") (footprint "Capacitor_SMD:C_0805_2012Metric")
-    )
     (path "/eadfda04-f56f-475e-9b77-9925c6870fda"
-      (reference "C?") (unit 1) (value "1u0") (footprint "Capacitor_SMD:C_0805_2012Metric")
+      (reference "C8") (unit 1) (value "1u0") (footprint "Capacitor_SMD:C_0805_2012Metric")
+    )
+    (path "/ad4fe0cb-eb55-43e0-b2d0-b7c510f1f6d7"
+      (reference "C9") (unit 1) (value "1u0") (footprint "Capacitor_SMD:C_0805_2012Metric")
     )
     (path "/e969782a-0db1-4285-870f-b759fd5a6a33"
       (reference "D1") (unit 1) (value "POWER_LED") (footprint "Diode_SMD:D_0805_2012Metric")
