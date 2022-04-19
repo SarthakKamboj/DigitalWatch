@@ -1,4 +1,4 @@
-19828219778442856
+19834821396077015
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -59262,6 +59262,20 @@ Mounting 4.5mm 9774100982
 8
 1
 MyLibrary
+CL-SB-22A-01T-Slide-Switch-FP
+
+
+0
+6
+3
+MyLibrary
+FSMSMTR-Tactile-Switch-FP
+
+
+0
+2
+2
+MyLibrary
 NTB5860NL_NMOSFET
 
 
@@ -59283,6 +59297,13 @@ SOT-23-3L
 3
 3
 MyLibrary
+SOT23F
+
+
+0
+0
+0
+MyLibrary
 SOT457T
 
 
@@ -59298,6 +59319,13 @@ SW-SMD-JLC-C405952
 3
 MyLibrary
 batman
+
+
+0
+0
+0
+MyLibrary
+scooby
 
 
 0
