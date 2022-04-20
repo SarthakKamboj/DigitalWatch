@@ -1,4 +1,4 @@
-19834821396077015
+19836471810287832
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -59283,6 +59283,13 @@ NTB5860NL_NMOSFET
 3
 3
 MyLibrary
+PowerIntegrations_SO-8-Copy
+Power-Integrations variant of 8-Lead Plastic Small Outline (SN) - Narrow, 3.90 mm Body [SOIC], see https://ac-dc.power.com/sites/default/files/product-docs/senzero_family_datasheet.pdf
+SOIC 1.27
+0
+8
+8
+MyLibrary
 SMD_3×4×2.0
 
 
@@ -59301,8 +59308,8 @@ SOT23F
 
 
 0
-0
-0
+3
+3
 MyLibrary
 SOT457T
 
